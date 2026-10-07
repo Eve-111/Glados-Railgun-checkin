@@ -33,8 +33,13 @@ jobs:
           upstream_sync_branch: master                            # 上游分支（注意是 master 不是 main）
           target_sync_branch: master                              # 你 fork 的分支
           target_repo_token: ${{ secrets.GITHUB_TOKEN }}
-          # --ff-only：只在能快进时同步。
-          # 如果你改过上游的文件导致冲突，同步会失败并告警，
-          # 而不是强行覆盖你的改动 —— 这样更安全。
-          upstream_pull_args: --ff-only
+          # 不要加 --ff-only。
+          # 你自己往 fork 里加过文件（比如这个 sync-fork.yml）之后，
+          # fork 和上游的历史就分叉了，快进合并必然失败：
+          #   fatal: Not possible to fast-forward, aborting.
+          # 留空让它走默认的 merge，既同步到上游又不丢你的改动。
+          #
+          # 如果你希望历史保持线性（不产生 merge commit），可以改成：
+          #   upstream_pull_args: --rebase
+          # 但你改动过的文件如果和上游撞车，rebase 会失败。
           test_mode: false
